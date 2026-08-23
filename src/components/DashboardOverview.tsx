@@ -40,18 +40,38 @@ interface DashboardOverviewProps {
 export function DashboardOverview({ summary, onOpenNewJournal, onSeedDemoData }: DashboardOverviewProps) {
   if (!summary) {
     return (
-      <div className="p-8 text-center bg-slate-900/50 border border-slate-800 rounded-2xl">
-        <Scale className="h-12 w-12 text-slate-600 mx-auto mb-3 animate-pulse" />
-        <h3 className="text-lg font-semibold text-slate-300">Henüz Finansal İşlem Yüklenmedi</h3>
-        <p className="text-slate-400 text-sm mt-1 max-w-md mx-auto">
-          Gelir-gider kayıtlarınızı tutmaya başlamak için örnek verileri yükleyebilir veya ilk Gelir / Gider kaydınızı oluşturabilirsiniz.
-        </p>
-        <div className="flex items-center justify-center gap-3 mt-6">
+      <div className="p-10 text-center bg-slate-900/50 border border-slate-800 rounded-2xl space-y-6">
+        <div className="h-16 w-16 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
+          <Building2 className="h-8 w-8" />
+        </div>
+
+        <div>
+          <h3 className="text-xl font-bold text-slate-100">Kurumsal Finans & Hesap Planı Hazır</h3>
+          <p className="text-slate-400 text-sm mt-2 max-w-lg mx-auto">
+            Gelir, gider ve kasa/banka hareketlerinizi işlemek için Kurumsal Hesap Planını başlatın veya doğrudan ilk İşlem Fişinizi kesin.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <button
             onClick={onSeedDemoData}
-            className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-emerald-500/10"
+            className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/10 flex items-center gap-2"
           >
-            Örnek Gelir-Gider İşlemlerini Yükle
+            <Building2 className="h-4 w-4" /> Şirket Hesap Planı & Açılış Fişini Yükle
+          </button>
+
+          <button
+            onClick={() => onOpenNewJournal("GELIR")}
+            className="bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-1.5"
+          >
+            <ArrowDownRight className="h-4 w-4 stroke-[2.5]" /> + İlk Gelir Kaydını Gir
+          </button>
+
+          <button
+            onClick={() => onOpenNewJournal("GIDER")}
+            className="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-rose-500/30 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-1.5"
+          >
+            <ArrowUpRight className="h-4 w-4 stroke-[2.5]" /> - İlk Gider Kaydını Gir
           </button>
         </div>
       </div>
