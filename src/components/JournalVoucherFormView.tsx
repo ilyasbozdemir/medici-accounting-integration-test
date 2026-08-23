@@ -45,20 +45,20 @@ interface JournalVoucherFormViewProps {
 }
 
 const DEFAULT_ACCOUNTS = [
-  { value: "Assets:100:Kasa", label: "100 Kasa Hesabı (Nakit)", type: "Asset", icon: Wallet },
-  { value: "Assets:102:Bank:Garanti", label: "102 Garanti Bankası TL Hesabı", type: "Asset", icon: Building },
-  { value: "Assets:102:Bank:Akbank", label: "102 Akbank TL Hesabı", type: "Asset", icon: Building },
-  { value: "Assets:102:Bank:Ziraat", label: "102 Ziraat Bankası TL Hesabı", type: "Asset", icon: Building },
-  { value: "Assets:120:Alicilar:ACME", label: "120 Alıcılar - ACME Corp (Ticari Alacak)", type: "Asset", icon: Receipt },
-  { value: "Assets:255:Equipment:Computers", label: "255 Demirbaşlar - Ofis Bilgisayarları", type: "Asset", icon: CreditCard },
-  { value: "Liabilities:320:Saticilar:VendorA", label: "320 Satıcılar - Tedarikçi A (Ticari Borç)", type: "Liability", icon: Receipt },
-  { value: "Liabilities:300:BankaKredisi", label: "300 Kısa Vadeli Banka Kredileri", type: "Liability", icon: Building },
-  { value: "Equity:500:Sermaye", label: "500 Ödenmiş Sermaye Hesabı", type: "Equity", icon: Scale },
-  { value: "Revenue:600:Services:Consulting", label: "600 Yurtiçi Satışlar - Danışmanlık Geliri", type: "Revenue", icon: ArrowDownRight },
-  { value: "Revenue:600:Software", label: "600 Yurtiçi Satışlar - Yazılım Lisansı", type: "Revenue", icon: ArrowDownRight },
-  { value: "Expenses:770:Rent", label: "770 Genel Yönetim - Ofis Kira Gideri", type: "Expense", icon: ArrowUpRight },
-  { value: "Expenses:770:Salaries", label: "770 Genel Yönetim - Personel Maaş Giderleri", type: "Expense", icon: ArrowUpRight },
-  { value: "Expenses:770:Hosting:AWS", label: "770 Genel Yönetim - AWS Sunucu Gideri", type: "Expense", icon: ArrowUpRight },
+  { value: "Assets:100:Kasa", label: "[100.01] 100 Merkez Kasa Hesabı (Nakit)", type: "Asset", icon: Wallet },
+  { value: "Assets:102:Bank:Garanti", label: "[102.01] 102 Garanti Bankası TL Hesabı", type: "Asset", icon: Building },
+  { value: "Assets:102:Bank:Akbank", label: "[102.02] 102 Akbank TL Hesabı", type: "Asset", icon: Building },
+  { value: "Assets:102:Bank:Ziraat", label: "[102.03] 102 Ziraat Bankası TL Hesabı", type: "Asset", icon: Building },
+  { value: "Assets:120:Alicilar:ACME", label: "[120.01] 120 Alıcılar - ACME Corp (Ticari Alacak)", type: "Asset", icon: Receipt },
+  { value: "Assets:255:Equipment:Computers", label: "[255.01] 255 Demirbaşlar - Ofis Bilgisayarları", type: "Asset", icon: CreditCard },
+  { value: "Liabilities:320:Saticilar:VendorA", label: "[320.01] 320 Satıcılar - Tedarikçi A (Ticari Borç)", type: "Liability", icon: Receipt },
+  { value: "Liabilities:300:BankaKredisi", label: "[300.01] 300 Kısa Vadeli Banka Kredileri", type: "Liability", icon: Building },
+  { value: "Equity:500:Sermaye", label: "[500.01] 500 Ödenmiş Sermaye Hesabı", type: "Equity", icon: Scale },
+  { value: "Revenue:600:Services:Consulting", label: "[600.01] 600 Yurtiçi Satışlar - Danışmanlık Geliri", type: "Revenue", icon: ArrowDownRight },
+  { value: "Revenue:600:Software", label: "[600.02] 600 Yurtiçi Satışlar - Yazılım Lisansı", type: "Revenue", icon: ArrowDownRight },
+  { value: "Expenses:770:Rent", label: "[770.01] 770 Genel Yönetim - Ofis Kira Gideri", type: "Expense", icon: ArrowUpRight },
+  { value: "Expenses:770:Salaries", label: "[770.02] 770 Genel Yönetim - Personel Maaş Giderleri", type: "Expense", icon: ArrowUpRight },
+  { value: "Expenses:770:Hosting:AWS", label: "[770.03] 770 Genel Yönetim - AWS Sunucu Gideri", type: "Expense", icon: ArrowUpRight },
 ];
 
 const CORPORATE_CODES = [

@@ -68,13 +68,13 @@ export function formatAccountName(accountPath: string): { code: string; title: s
   else if (parts[0] === "Revenue" || parts[0] === "Gelirler") code = "600";
   else if (parts[0] === "Expenses" || parts[0] === "Giderler") code = "770";
 
-  // If a 3-digit code was included in path e.g. "Assets:102:Banka"
-  const foundCode = parts.find((p) => /^\d{3}$/.test(p));
+  // If a 3-digit or sub-account code (e.g. "100" or "100.01") was included in path
+  const foundCode = parts.find((p) => /^\d{3}(\.\d{1,3})?$/.test(p));
   if (foundCode) {
     code = foundCode;
   }
 
-  const cleanName = parts.slice(1).filter((p) => !/^\d{3}$/.test(p)).join(" › ");
+  const cleanName = parts.slice(1).filter((p) => !/^\d{3}(\.\d{1,3})?$/.test(p)).join(" › ");
   const title = cleanName ? `${code} ${cleanName}` : `${code} ${accountPath}`;
 
   return {
