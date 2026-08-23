@@ -10,7 +10,6 @@ import {
   Building2,
   Check,
   ChevronDown,
-  ChevronRight,
   FileSpreadsheet,
   FileText,
   HelpCircle,
@@ -94,9 +93,6 @@ export function Sidebar({
   const [activeModule, setActiveModule] = useState<ModuleCategory>("muhasebe");
   const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false);
   const [menuSearchTerm, setMenuSearchTerm] = useState("");
-
-  // Sub-menu accordion toggle state
-  const [expandedSubGroup, setExpandedSubGroup] = useState<string | null>("fisislemleri");
 
   useEffect(() => {
     if (pathname.includes("tahsilat-satis")) setActiveModule("tahsilat");
@@ -231,7 +227,7 @@ export function Sidebar({
             </div>
           )}
 
-          {/* MAIN MODULE SELECTOR DROPDOWN (IMAGE 1 MENU LIST) */}
+          {/* MAIN MODULE SELECTOR DROPDOWN */}
           {!isCollapsed ? (
             <div className="relative">
               <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-1 mb-1 flex items-center justify-between">
@@ -292,11 +288,11 @@ export function Sidebar({
             </button>
           )}
 
-          {/* SUB-MENU SECTION MATCHING IMAGE 2 (WITH SEARCH BAR & GREEN HIGHLIGHT) */}
+          {/* SUB-MENU SECTION (FLAT STRUCTURE MATCHING OFFICIAL SCREENSHOT) */}
           <div className="space-y-2 pt-2 border-t border-slate-800">
             {!isCollapsed && (
               <div className="space-y-2">
-                {/* Sub-menu title & Search input matching screenshot 2 */}
+                {/* Sub-menu title & Search input matching screenshot */}
                 <div className="flex items-center justify-between text-xs font-extrabold text-blue-400 px-1 border-b border-slate-800 pb-1.5">
                   <span className="truncate">{currentModuleObj.title}</span>
                   <Search className="h-3.5 w-3.5 text-slate-400 cursor-pointer" />
@@ -316,9 +312,9 @@ export function Sidebar({
               </div>
             )}
 
-            {/* SUB-ITEMS FOR SELECTED MODULE */}
+            {/* FLAT SUB-MENU ITEMS (NO NESTING / NO INDENTATION / MATCHING SCREENSHOT) */}
             <div className="space-y-1 pt-1">
-              {/* 1. Dashboard / Gösterge Paneli (Item #1) */}
+              {/* 1. Gösterge Paneli */}
               <button
                 onClick={() => {
                   if (activeModule === "tahsilat") router.push("/tahsilat-satis");
@@ -330,13 +326,13 @@ export function Sidebar({
                   else router.push("/");
                   setIsOpenMobile(false);
                 }}
-                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2"
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2.5"
               >
                 <LayoutDashboard className="h-4 w-4 text-sky-400" />
                 {!isCollapsed && "Gösterge Paneli"}
               </button>
 
-              {/* 2. Ön Muhasebe Kaydı İşlemleri (GREEN HIGHLIGHT MATCHING IMAGE 2) */}
+              {/* 2. Ön Muhasebe Kaydı İşlemleri (GREEN HIGHLIGHT MATCHING SCREENSHOT) */}
               <button
                 onClick={() => {
                   onOpenNewJournal("GELIR");
@@ -344,144 +340,86 @@ export function Sidebar({
                 }}
                 className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition flex items-center justify-between"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <Calendar className="h-4 w-4 text-white" />
                   {!isCollapsed && <span>Ön Muhasebe Kaydı İşlemleri</span>}
                 </div>
                 {!isCollapsed && <Plus className="h-4 w-4 text-white font-bold" />}
               </button>
 
-              {/* 3. Muhasebe Fişi İşlemleri (Collapsible Accordion) */}
-              <div className="space-y-1 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setExpandedSubGroup(expandedSubGroup === "fisislemleri" ? null : "fisislemleri")}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
-                >
-                  <div className="flex items-center gap-2">
-                    <Receipt className="h-4 w-4 text-emerald-400" />
-                    {!isCollapsed && <span>Muhasebe Fişi İşlemleri</span>}
-                  </div>
-                  {!isCollapsed && (
-                    <ChevronRight className={`h-3.5 w-3.5 text-slate-400 transition-transform ${expandedSubGroup === "fisislemleri" ? "rotate-90 text-emerald-400" : ""}`} />
-                  )}
-                </button>
+              {/* 3. Muhasebe Fişi İşlemleri (FLAT ITEM) */}
+              <button
+                onClick={() => {
+                  onOpenNewJournal("ADVANCED");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2.5"
+              >
+                <Receipt className="h-4 w-4 text-emerald-400" />
+                {!isCollapsed && "Muhasebe Fişi İşlemleri"}
+              </button>
 
-                {expandedSubGroup === "fisislemleri" && !isCollapsed && (
-                  <div className="pl-6 space-y-1 border-l-2 border-slate-800 ml-3">
-                    <button
-                      onClick={() => {
-                        onOpenNewJournal("GELIR");
-                        setIsOpenMobile(false);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-400 hover:bg-slate-900 transition"
-                    >
-                      + Tahsilat Fişi Oluştur (Gelir)
-                    </button>
-                    <button
-                      onClick={() => {
-                        onOpenNewJournal("GIDER");
-                        setIsOpenMobile(false);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-400 hover:bg-slate-900 transition"
-                    >
-                      - Tediye Fişi Oluştur (Gider)
-                    </button>
-                    <button
-                      onClick={() => {
-                        onOpenNewJournal("ADVANCED");
-                        setIsOpenMobile(false);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-blue-400 hover:bg-slate-900 transition"
-                    >
-                      ⚙️ Mahsup Fişi Oluştur (Yevmiye)
-                    </button>
-                    <button
-                      onClick={() => {
-                        onOpenNewJournal("VIRMAN");
-                        setIsOpenMobile(false);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-teal-400 hover:bg-slate-900 transition"
-                    >
-                      🔄 Virman Fişi Oluştur (Transfer)
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* 4. Hesap Planı ve Kodu İşlemleri */}
+              {/* 4. Hesap Planı ve Kodu İşlemleri (FLAT ITEM) */}
               <button
                 onClick={() => {
                   router.push("/muhasebe-tahakkuk");
                   setIsOpenMobile(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2.5"
               >
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-blue-400" />
-                  {!isCollapsed && <span>Hesap Planı ve Kodu İşlemleri</span>}
-                </div>
-                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+                <Users className="h-4 w-4 text-blue-400" />
+                {!isCollapsed && "Hesap Planı ve Kodu İşlemleri"}
               </button>
 
-              {/* 5. Hesap İnceleme & Ekstre İşlemleri */}
+              {/* 5. Hesap İnceleme & Ekstre İşlemleri (FLAT ITEM) */}
               <button
                 onClick={() => {
                   router.push("/musteriler");
                   setIsOpenMobile(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2.5"
               >
-                <div className="flex items-center gap-2">
-                  <Search className="h-4 w-4 text-amber-400" />
-                  {!isCollapsed && <span>Hesap İnceleme & Ekstre</span>}
-                </div>
-                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+                <Search className="h-4 w-4 text-amber-400" />
+                {!isCollapsed && "Hesap İnceleme & Ekstre İşlemleri"}
               </button>
 
-              {/* 6. Raporlar */}
+              {/* 6. Raporlar & Cetveller (FLAT ITEM) */}
               <button
                 onClick={() => {
                   router.push("/finansal-raporlar");
                   setIsOpenMobile(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2.5"
               >
-                <div className="flex items-center gap-2">
-                  <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
-                  {!isCollapsed && <span>Raporlar & Cetveller</span>}
-                </div>
-                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+                <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+                {!isCollapsed && "Raporlar & Cetveller"}
               </button>
 
-              {/* 7. Nakit Hareketleri */}
+              {/* 7. Nakit Hareketleri (FLAT ITEM) */}
               <button
                 onClick={() => {
                   router.push("/banka-kasa");
                   setIsOpenMobile(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2.5"
               >
-                <div className="flex items-center gap-2">
-                  <Wallet className="h-4 w-4 text-teal-400" />
-                  {!isCollapsed && <span>Nakit Hareketleri</span>}
-                </div>
-                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+                <Wallet className="h-4 w-4 text-teal-400" />
+                {!isCollapsed && "Nakit Hareketleri"}
               </button>
 
               {/* 8. Yardım Kılavuzu & Videolar */}
               <div className="pt-2 border-t border-slate-800 space-y-1">
                 <button
-                  onClick={() => alert("Yardım Kılavuzu: Sistemi kullanırken fiş türlerini seçebilir, denge çubuğunu kontrol edebilir ve Excel ekstre raporları alabilirsiniz.")}
-                  className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-2"
+                  onClick={() => alert("Yardım Kılavuzu: Fiş kesme, borç/alacak dengeleme ve ekstre raporlama rehberi.")}
+                  className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-2.5"
                 >
                   <HelpCircle className="h-4 w-4 text-sky-400" />
                   {!isCollapsed && "Yardım Kılavuzu"}
                 </button>
 
                 <button
-                  onClick={() => alert("Yardım Videoları: Kurumsal Ön Muhasebe Fiş Kesme ve Bilanço Eğitimi.")}
-                  className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-2"
+                  onClick={() => alert("Yardım Videoları: Kurumsal Muhasebe Sistemi Kullanım Eğitimi.")}
+                  className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-2.5"
                 >
                   <PlayCircle className="h-4 w-4 text-rose-400" />
                   {!isCollapsed && "Yardım Videoları"}
