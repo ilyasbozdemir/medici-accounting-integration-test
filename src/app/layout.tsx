@@ -11,7 +11,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Medici Finans & Gelir-Gider Ön Muhasebe Yönetimi",
   description:
-    "Çift taraflı (Double-Entry) muhasebe ve TDHP gelir-gider yönetim sistemi.",
+    "Kurumsal gelir-gider, fiş düzenleme, müşteri, tedarikçi ve bakiye yönetim sistemi.",
 };
 
 export default function RootLayout({
