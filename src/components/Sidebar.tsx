@@ -10,8 +10,10 @@ import {
   Building2,
   Check,
   ChevronDown,
+  ChevronRight,
   FileSpreadsheet,
   FileText,
+  HelpCircle,
   Layers,
   LayoutDashboard,
   Moon,
@@ -21,6 +23,7 @@ import {
   Receipt,
   RefreshCw,
   Scale,
+  Search,
   ShieldCheck,
   SlidersHorizontal,
   Sun,
@@ -28,15 +31,19 @@ import {
   Users,
   Wallet,
   X,
+  PlayCircle,
+  Briefcase,
+  CreditCard,
+  Calendar,
+  AlertTriangle,
 } from "lucide-react";
 import { CompanyInfo } from "./Navbar";
 
 export type ModuleCategory =
+  | "alacak"
+  | "odeme"
   | "tahsilat"
-  | "tediye"
-  | "musteriler"
-  | "tedarikciler"
-  | "banka"
+  | "varlik"
   | "muhasebe"
   | "raporlar"
   | "test";
@@ -83,19 +90,23 @@ export function Sidebar({
 
   const currentCompany = companies.find((c) => c.id === selectedBook) || companies[0];
 
-  // Active operational module state (Default: Tahsilat & Satış)
-  const [activeModule, setActiveModule] = useState<ModuleCategory>("tahsilat");
+  // Active module category
+  const [activeModule, setActiveModule] = useState<ModuleCategory>("muhasebe");
   const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false);
+  const [menuSearchTerm, setMenuSearchTerm] = useState("");
+
+  // Sub-menu accordion toggle state
+  const [expandedSubGroup, setExpandedSubGroup] = useState<string | null>("fisislemleri");
 
   useEffect(() => {
     if (pathname.includes("tahsilat-satis")) setActiveModule("tahsilat");
-    else if (pathname.includes("odeme-tediye")) setActiveModule("tediye");
-    else if (pathname.includes("musteriler")) setActiveModule("musteriler");
-    else if (pathname.includes("tedarikciler")) setActiveModule("tedarikciler");
-    else if (pathname.includes("banka-kasa")) setActiveModule("banka");
+    else if (pathname.includes("odeme-tediye")) setActiveModule("odeme");
+    else if (pathname.includes("musteriler")) setActiveModule("alacak");
+    else if (pathname.includes("tedarikciler")) setActiveModule("odeme");
+    else if (pathname.includes("banka-kasa")) setActiveModule("varlik");
     else if (pathname.includes("muhasebe-tahakkuk")) setActiveModule("muhasebe");
     else if (pathname.includes("finansal-raporlar")) setActiveModule("raporlar");
-    else setActiveModule("tahsilat");
+    else setActiveModule("muhasebe");
   }, [pathname]);
 
   const toggleTheme = () => {
@@ -107,15 +118,13 @@ export function Sidebar({
     setActiveModule(mod);
     setIsModuleDropdownOpen(false);
 
-    if (mod === "tahsilat") {
-      router.push("/tahsilat-satis");
-    } else if (mod === "tediye") {
-      router.push("/odeme-tediye");
-    } else if (mod === "musteriler") {
+    if (mod === "alacak") {
       router.push("/musteriler");
-    } else if (mod === "tedarikciler") {
-      router.push("/tedarikciler");
-    } else if (mod === "banka") {
+    } else if (mod === "odeme") {
+      router.push("/odeme-tediye");
+    } else if (mod === "tahsilat") {
+      router.push("/tahsilat-satis");
+    } else if (mod === "varlik") {
       router.push("/banka-kasa");
     } else if (mod === "muhasebe") {
       router.push("/muhasebe-tahakkuk");
@@ -127,15 +136,14 @@ export function Sidebar({
     }
   };
 
-  // Main operational categories list (No general dashboard here)
+  // Main Category items matching official screenshot
   const mainCategories = [
-    { id: "tahsilat", title: "Gelir & Tahsilat İşlemleri", icon: ArrowDownRight },
-    { id: "tediye", title: "Gider & Ödeme İşlemleri", icon: ArrowUpRight },
-    { id: "musteriler", title: "Müşteriler & Cariler (120)", icon: Users },
-    { id: "tedarikciler", title: "Tedarikçiler & Borçlar (320)", icon: Building2 },
-    { id: "banka", title: "Banka & Kasa Varlıkları", icon: Wallet },
-    { id: "muhasebe", title: "Muhasebe & Yevmiye Fişleri", icon: Scale },
-    { id: "raporlar", title: "Finansal Raporlar & Cetveller", icon: FileSpreadsheet },
+    { id: "muhasebe", title: "Muhasebe İşlemleri", icon: Calendar },
+    { id: "tahsilat", title: "Tahsilat İşlemleri", icon: Wallet },
+    { id: "odeme", title: "Ödeme İşlemleri", icon: CreditCard },
+    { id: "alacak", title: "Alacak İşlemleri (120)", icon: Briefcase },
+    { id: "varlik", title: "Varlık İşlemleri (100/102)", icon: Building },
+    { id: "raporlar", title: "Finansal Raporlar", icon: FileText },
     { id: "test", title: "Sistem & Test Motoru", icon: Terminal },
   ] as const;
 
@@ -151,7 +159,7 @@ export function Sidebar({
         />
       )}
 
-      {/* SINGLE CLEAN SIDEBAR */}
+      {/* SINGLE SIDEBAR */}
       <aside
         className={`fixed top-0 bottom-0 left-0 z-50 bg-slate-950 border-r border-slate-800 flex flex-col justify-between p-3.5 transition-all duration-300 ease-in-out lg:translate-x-0 ${
           isOpenMobile
@@ -161,7 +169,7 @@ export function Sidebar({
       >
         {/* Top Scrollable Content */}
         <div className="space-y-4 overflow-y-auto no-scrollbar pr-0.5 relative">
-          {/* Header: Logo & Sidebar Collapse Button */}
+          {/* Header: Logo & System Name */}
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="h-9 w-9 shrink-0 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-100 font-bold shadow-sm">
@@ -171,10 +179,10 @@ export function Sidebar({
               {!isCollapsed && (
                 <div className="truncate">
                   <h1 className="font-extrabold text-sm text-slate-100 tracking-tight">
-                    Medici Finans
+                    Muhasebe Sistemi
                   </h1>
                   <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-                    <ShieldCheck className="h-3 w-3 text-emerald-400" /> Kurumsal Muhasebe
+                    <ShieldCheck className="h-3 w-3 text-emerald-400" /> Kurumsal Finans
                   </span>
                 </div>
               )}
@@ -223,12 +231,12 @@ export function Sidebar({
             </div>
           )}
 
-          {/* MAIN MODULE SELECTOR DROPDOWN */}
+          {/* MAIN MODULE SELECTOR DROPDOWN (IMAGE 1 MENU LIST) */}
           {!isCollapsed ? (
             <div className="relative">
               <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-1 mb-1 flex items-center justify-between">
                 <span>Ana Modül Seçimi</span>
-                <span className="text-slate-500 font-mono text-[9px]">Tıkla & Değiştir</span>
+                <span className="text-slate-500 font-mono text-[9px]">Tıkla & Geç</span>
               </div>
 
               <button
@@ -284,295 +292,202 @@ export function Sidebar({
             </button>
           )}
 
-          {/* SUB-MENU ITEMS LIST FOR THE SELECTED MODULE */}
+          {/* SUB-MENU SECTION MATCHING IMAGE 2 (WITH SEARCH BAR & GREEN HIGHLIGHT) */}
           <div className="space-y-2 pt-2 border-t border-slate-800">
             {!isCollapsed && (
-              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-1">
-                {currentModuleObj.title} - İşlemler
+              <div className="space-y-2">
+                {/* Sub-menu title & Search input matching screenshot 2 */}
+                <div className="flex items-center justify-between text-xs font-extrabold text-blue-400 px-1 border-b border-slate-800 pb-1.5">
+                  <span className="truncate">{currentModuleObj.title}</span>
+                  <Search className="h-3.5 w-3.5 text-slate-400 cursor-pointer" />
+                </div>
+
+                {/* Sub-menu search input */}
+                <div className="relative">
+                  <Search className="h-3.5 w-3.5 absolute left-2.5 top-2 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="İç menülerde ara..."
+                    value={menuSearchTerm}
+                    onChange={(e) => setMenuSearchTerm(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 text-slate-200 text-[11px] pl-8 pr-2.5 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
               </div>
             )}
 
-            {/* 1. TAHSİLAT & SATIŞ SUB-ITEMS */}
-            {activeModule === "tahsilat" && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => {
-                    router.push("/tahsilat-satis");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Tahsilat & Gelir Dashboard"}
-                </button>
+            {/* SUB-ITEMS FOR SELECTED MODULE */}
+            <div className="space-y-1 pt-1">
+              {/* 1. Dashboard / Gösterge Paneli (Item #1) */}
+              <button
+                onClick={() => {
+                  if (activeModule === "tahsilat") router.push("/tahsilat-satis");
+                  else if (activeModule === "odeme") router.push("/odeme-tediye");
+                  else if (activeModule === "alacak") router.push("/musteriler");
+                  else if (activeModule === "varlik") router.push("/banka-kasa");
+                  else if (activeModule === "muhasebe") router.push("/muhasebe-tahakkuk");
+                  else if (activeModule === "raporlar") router.push("/finansal-raporlar");
+                  else router.push("/");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-slate-900 transition flex items-center gap-2"
+              >
+                <LayoutDashboard className="h-4 w-4 text-sky-400" />
+                {!isCollapsed && "Gösterge Paneli"}
+              </button>
 
+              {/* 2. Ön Muhasebe Kaydı İşlemleri (GREEN HIGHLIGHT MATCHING IMAGE 2) */}
+              <button
+                onClick={() => {
+                  onOpenNewJournal("GELIR");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-white" />
+                  {!isCollapsed && <span>Ön Muhasebe Kaydı İşlemleri</span>}
+                </div>
+                {!isCollapsed && <Plus className="h-4 w-4 text-white font-bold" />}
+              </button>
+
+              {/* 3. Muhasebe Fişi İşlemleri (Collapsible Accordion) */}
+              <div className="space-y-1 pt-1">
                 <button
-                  onClick={() => {
-                    router.push("/tahsilat-satis");
-                    onOpenNewJournal("GELIR");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold text-slate-100 bg-slate-900 hover:bg-slate-800 border border-slate-700 transition flex items-center justify-between shadow-sm active:scale-98"
+                  type="button"
+                  onClick={() => setExpandedSubGroup(expandedSubGroup === "fisislemleri" ? null : "fisislemleri")}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
                 >
-                  <span className="flex items-center gap-1.5">
-                    <Plus className="h-3.5 w-3.5 text-emerald-400 font-bold" />
-                    {!isCollapsed && "Tahsilat Fişi Oluştur"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Receipt className="h-4 w-4 text-emerald-400" />
+                    {!isCollapsed && <span>Muhasebe Fişi İşlemleri</span>}
+                  </div>
                   {!isCollapsed && (
-                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-mono font-bold">
-                      GELİR
-                    </span>
+                    <ChevronRight className={`h-3.5 w-3.5 text-slate-400 transition-transform ${expandedSubGroup === "fisislemleri" ? "rotate-90 text-emerald-400" : ""}`} />
                   )}
                 </button>
 
+                {expandedSubGroup === "fisislemleri" && !isCollapsed && (
+                  <div className="pl-6 space-y-1 border-l-2 border-slate-800 ml-3">
+                    <button
+                      onClick={() => {
+                        onOpenNewJournal("GELIR");
+                        setIsOpenMobile(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-400 hover:bg-slate-900 transition"
+                    >
+                      + Tahsilat Fişi Oluştur (Gelir)
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenNewJournal("GIDER");
+                        setIsOpenMobile(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-400 hover:bg-slate-900 transition"
+                    >
+                      - Tediye Fişi Oluştur (Gider)
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenNewJournal("ADVANCED");
+                        setIsOpenMobile(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-blue-400 hover:bg-slate-900 transition"
+                    >
+                      ⚙️ Mahsup Fişi Oluştur (Yevmiye)
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenNewJournal("VIRMAN");
+                        setIsOpenMobile(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-teal-400 hover:bg-slate-900 transition"
+                    >
+                      🔄 Virman Fişi Oluştur (Transfer)
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* 4. Hesap Planı ve Kodu İşlemleri */}
+              <button
+                onClick={() => {
+                  router.push("/muhasebe-tahakkuk");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-400" />
+                  {!isCollapsed && <span>Hesap Planı ve Kodu İşlemleri</span>}
+                </div>
+                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+              </button>
+
+              {/* 5. Hesap İnceleme & Ekstre İşlemleri */}
+              <button
+                onClick={() => {
+                  router.push("/musteriler");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <Search className="h-4 w-4 text-amber-400" />
+                  {!isCollapsed && <span>Hesap İnceleme & Ekstre</span>}
+                </div>
+                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+              </button>
+
+              {/* 6. Raporlar */}
+              <button
+                onClick={() => {
+                  router.push("/finansal-raporlar");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+                  {!isCollapsed && <span>Raporlar & Cetveller</span>}
+                </div>
+                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+              </button>
+
+              {/* 7. Nakit Hareketleri */}
+              <button
+                onClick={() => {
+                  router.push("/banka-kasa");
+                  setIsOpenMobile(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4 text-teal-400" />
+                  {!isCollapsed && <span>Nakit Hareketleri</span>}
+                </div>
+                {!isCollapsed && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+              </button>
+
+              {/* 8. Yardım Kılavuzu & Videolar */}
+              <div className="pt-2 border-t border-slate-800 space-y-1">
                 <button
-                  onClick={() => {
-                    router.push("/musteriler");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
+                  onClick={() => alert("Yardım Kılavuzu: Sistemi kullanırken fiş türlerini seçebilir, denge çubuğunu kontrol edebilir ve Excel ekstre raporları alabilirsiniz.")}
+                  className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-2"
                 >
-                  {!isCollapsed ? "• 120 Alıcılar / Müşteri Carileri" : "120"}
+                  <HelpCircle className="h-4 w-4 text-sky-400" />
+                  {!isCollapsed && "Yardım Kılavuzu"}
+                </button>
+
+                <button
+                  onClick={() => alert("Yardım Videoları: Kurumsal Ön Muhasebe Fiş Kesme ve Bilanço Eğitimi.")}
+                  className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-2"
+                >
+                  <PlayCircle className="h-4 w-4 text-rose-400" />
+                  {!isCollapsed && "Yardım Videoları"}
                 </button>
               </div>
-            )}
-
-            {/* 2. TEDİYE SUB-ITEMS */}
-            {activeModule === "tediye" && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => {
-                    router.push("/odeme-tediye");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Gider & Ödeme Dashboard"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/odeme-tediye");
-                    onOpenNewJournal("GIDER");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold text-slate-100 bg-slate-900 hover:bg-slate-800 border border-slate-700 transition flex items-center justify-between shadow-sm active:scale-98"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Plus className="h-3.5 w-3.5 text-rose-400 font-bold" />
-                    {!isCollapsed && "Tediye Fişi Oluştur"}
-                  </span>
-                  {!isCollapsed && (
-                    <span className="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-mono font-bold">
-                      GİDER
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/tedarikciler");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• 320 Satıcılar / Tedarikçi Borçları" : "320"}
-                </button>
-              </div>
-            )}
-
-            {/* 3. MÜŞTERİLER SUB-ITEMS */}
-            {activeModule === "musteriler" && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => {
-                    router.push("/musteriler");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Müşteri Carileri Dashboard"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/tahsilat-satis");
-                    onOpenNewJournal("GELIR");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• Müşteri Tahsilat Fişi Kes" : "Tahsilat"}
-                </button>
-              </div>
-            )}
-
-            {/* 4. TEDARİKÇİLER SUB-ITEMS */}
-            {activeModule === "tedarikciler" && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => {
-                    router.push("/tedarikciler");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Tedarikçi Borçları Dashboard"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/odeme-tediye");
-                    onOpenNewJournal("GIDER");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• Tedarikçi Ödeme Fişi Kes" : "Ödeme"}
-                </button>
-              </div>
-            )}
-
-            {/* 5. BANKA SUB-ITEMS */}
-            {activeModule === "banka" && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => {
-                    router.push("/banka-kasa");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Banka & Kasa Likidite Dashboard"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/muhasebe-tahakkuk");
-                    onOpenNewJournal("VIRMAN");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• Banka Virman Fişi Kes (Transfer)" : "Virman"}
-                </button>
-              </div>
-            )}
-
-            {/* 6. MUHASEBE SUB-ITEMS */}
-            {activeModule === "muhasebe" && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => {
-                    router.push("/muhasebe-tahakkuk");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Muhasebe & Yevmiye Dashboard"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/muhasebe-tahakkuk");
-                    onOpenNewJournal("ADVANCED");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-100 bg-slate-900 hover:bg-slate-800 border border-slate-700 transition flex items-center justify-between"
-                >
-                  <span>{!isCollapsed ? "⚙️ Mahsup Fişi Oluştur" : "Mahsup"}</span>
-                  {!isCollapsed && (
-                    <span className="text-[10px] text-blue-400 font-mono font-bold">
-                      YEVMİYE
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/muhasebe-tahakkuk");
-                    onOpenNewJournal("VIRMAN");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-100 bg-slate-900 hover:bg-slate-800 border border-slate-700 transition flex items-center justify-between"
-                >
-                  <span>{!isCollapsed ? "🔄 Virman Fişi Oluştur" : "Virman"}</span>
-                  {!isCollapsed && (
-                    <span className="text-[10px] text-teal-400 font-mono font-bold">
-                      TRANSFER
-                    </span>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* 7. RAPORLAR SUB-ITEMS */}
-            {activeModule === "raporlar" && (
-              <div className="space-y-1 text-xs font-semibold text-slate-300">
-                <button
-                  onClick={() => {
-                    router.push("/finansal-raporlar");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition flex items-center gap-2"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  {!isCollapsed && "Finansal Raporlar Dashboard"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/finansal-raporlar");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• Bilanço Tablosu (Balance Sheet)" : "Bilanço"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/finansal-raporlar");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• Gelir Tablosu (Income Statement)" : "Gelir"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    router.push("/finansal-raporlar");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-900 transition"
-                >
-                  {!isCollapsed ? "• Mizan Cetveli (Trial Balance)" : "Mizan"}
-                </button>
-              </div>
-            )}
-
-            {/* 8. TEST SUB-ITEMS */}
-            {activeModule === "test" && (
-              <div className="space-y-1">
-                <button
-                  onClick={() => {
-                    router.push("/");
-                    setActiveTab("test");
-                    setIsOpenMobile(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition flex items-center gap-2"
-                >
-                  <Terminal className="h-3.5 w-3.5 text-emerald-400" />
-                  {!isCollapsed ? "⚡ Medici Motor Test Dashboard" : "Test"}
-                </button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
