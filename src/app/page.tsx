@@ -31,19 +31,27 @@ export default function Home() {
   const loadData = async () => {
     setLoadingData(true);
     try {
+      const parseSafeJson = async (res: Response) => {
+        const contentType = res.headers.get("content-type") || "";
+        if (res.ok && contentType.includes("application/json")) {
+          return await res.json();
+        }
+        return null;
+      };
+
       const [accRes, txRes, repRes] = await Promise.all([
         fetch("/api/medici/accounts"),
         fetch("/api/medici/ledger"),
         fetch("/api/medici/reports"),
       ]);
 
-      const accData = await accRes.json();
-      const txData = await txRes.json();
-      const repData = await repRes.json();
+      const accData = await parseSafeJson(accRes);
+      const txData = await parseSafeJson(txRes);
+      const repData = await parseSafeJson(repRes);
 
-      if (accData.success) setAccounts(accData.accounts);
-      if (txData.success) setTransactions(txData.transactions);
-      if (repData.success) setReports(repData.reports);
+      if (accData?.success) setAccounts(accData.accounts);
+      if (txData?.success) setTransactions(txData.transactions);
+      if (repData?.success) setReports(repData.reports);
     } catch (err) {
       console.error("Data loading error:", err);
     } finally {
